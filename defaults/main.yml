@@ -1,0 +1,9 @@
+---
+netbox_user: netbox
+netbox_group: netbox
+netbox_log_dir: /var/log/netbox
+netbox_db_dir: "{{ __netbox_db_dir }}"
+netbox_service: netbox
+netbox_conf_dir: "{{ __netbox_conf_dir }}"
+netbox_conf_file: "{{ __netbox_conf_dir }}/netbox.conf"
+netbox_flags: ""

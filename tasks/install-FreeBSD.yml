@@ -1,0 +1,6 @@
+---
+
+- name: Install netbox
+  pkgng:
+    name: netbox
+    state: present

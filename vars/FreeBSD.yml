@@ -1,0 +1,3 @@
+---
+__netbox_db_dir: /var/db/netbox
+__netbox_conf_dir: /usr/local/etc/netbox

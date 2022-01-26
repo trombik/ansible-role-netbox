@@ -1,0 +1,6 @@
+---
+
+- name: Restart netbox
+  service:
+    name: netbox
+    state: restarted
