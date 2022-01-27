@@ -52,3 +52,10 @@
   ansible.builtin.service:
     name: "{{ netbox_service }}"
     state: started
+
+- name: Wait for netbox
+  ansible.builtin.wait_for:
+    host: "{{ netbox_bind_address }}"
+    port: "{{ netbox_bind_port }}"
+    delay: "{{ netbox_wait_for_delay }}"
+    sleep: "{{ netbox_wait_for_sleep }}"

@@ -32,6 +32,8 @@ netbox_db_password: ""
 netbox_db_name: netbox
 netbox_db_wait_for_delay: 0
 netbox_db_wait_for_sleep: 1
+netbox_wait_for_delay: 0
+netbox_wait_for_sleep: 1
 netbox_superuser_name: root
 netbox_superuser_password: password
 netbox_superuser_email: dave.null@localhost
