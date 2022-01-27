@@ -11,6 +11,13 @@
     netbox_db_password: password
     netbox_redis_tasks_password: "{{ redis_password }}"
     netbox_redis_caching_password: "{{ redis_password }}"
+
+    os_netbox_extra_packages:
+      FreeBSD:
+        - security/py-netbox-secretstore
+      Debian: []
+      OpenBSD: []
+    netbox_extra_packages: "{{ os_netbox_extra_packages[ansible_os_family] }}"
     netbox_config: |
       ALLOWED_HOSTS = []
       DATABASE = {

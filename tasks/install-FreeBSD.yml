@@ -7,6 +7,12 @@
   register: __netbox_install_netbox
   notify: Restart netbox
 
+- name: Install netbox_extra_packages
+  ansible.builtin.pkgng:
+    name: "{{ netbox_extra_packages }}"
+    state: present
+  notify: Restart netbox
+
 - name: Create symlink to rc script for netbox
   ansible.builtin.file:
     src: /usr/local/share/examples/netbox/netboxrc.sample

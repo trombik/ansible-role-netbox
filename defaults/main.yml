@@ -4,6 +4,7 @@ netbox_group: "{{ __netbox_group }}"
 netbox_service: "{{ __netbox_service }}"
 netbox_service_rq: "{{ __netbox_service_rq }}"
 netbox_package: "{{ __netbox_package }}"
+netbox_extra_packages: []
 netbox_conf_dir: "{{ __netbox_conf_dir }}"
 netbox_conf_file: "{{ netbox_conf_dir }}/configuration.py"
 netbox_docs_root_dir: "{{ __netbox_docs_root_dir }}"

@@ -2,6 +2,10 @@ require "spec_helper"
 require "serverspec"
 
 package = "netbox"
+extra_packages = case os[:family]
+                 when "freebsd"
+                   ["security/py-netbox-secretstore"]
+                 end
 service = "netbox"
 service_rq = "netbox_rq"
 config_dir = case os[:family]
@@ -28,6 +32,12 @@ ports   = [
 
 describe package(package) do
   it { should be_installed }
+end
+
+extra_packages.each do |p|
+  describe package p do
+    it { should be_installed }
+  end
 end
 
 describe file(config) do
