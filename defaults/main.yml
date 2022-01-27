@@ -23,11 +23,17 @@ netbox_redis_caching_port: 6379
 netbox_redis_caching_password: ""
 netbox_redis_caching_tls: false
 netbox_redis_caching_database: 1
+netbox_redis_wait_for_delay: 10
+netbox_redis_wait_for_timeout: 10
+netbox_redis_wait_for_sleep: 1
 netbox_db_host: 127.0.0.1
 netbox_db_port: 5432
 netbox_db_user: netbox
 netbox_db_password: ""
 netbox_db_name: netbox
+netbox_db_wait_for_delay: 10
+netbox_db_wait_for_timeout: 10
+netbox_db_wait_for_sleep: 1
 netbox_superuser_name: root
 netbox_superuser_password: password
 netbox_superuser_email: dave.null@localhost

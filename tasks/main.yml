@@ -17,6 +17,30 @@
     validate: "{{ ansible_python['executable'] }} -m py_compile %s"
   notify: Restart netbox
 
+- name: Wait for redis server (tasks)
+  ansible.builtin.wait_for:
+    host: "{{ netbox_redis_tasks_host }}"
+    port: "{{ netbox_redis_tasks_port }}"
+    delay: "{{ netbox_redis_wait_for_delay }}"
+    timeout: "{{ netbox_redis_wait_for_timeout }}"
+    sleep: "{{ netbox_redis_wait_for_sleep }}"
+
+- name: Wait for redis server (caching)
+  ansible.builtin.wait_for:
+    host: "{{ netbox_redis_caching_host }}"
+    port: "{{ netbox_redis_caching_port }}"
+    delay: "{{ netbox_redis_wait_for_delay }}"
+    timeout: "{{ netbox_redis_wait_for_timeout }}"
+    sleep: "{{ netbox_redis_wait_for_sleep }}"
+
+- name: Wait for postgrsql
+  ansible.builtin.wait_for:
+    host: "{{ netbox_db_host }}"
+    port: "{{ netbox_db_port }}"
+    delay: "{{ netbox_db_wait_for_delay }}"
+    timeout: "{{ netbox_db_wait_for_timeout }}"
+    sleep: "{{ netbox_db_wait_for_sleep }}"
+
 - name: Include init_netbox.yml
   include: init_netbox.yml
   when:
