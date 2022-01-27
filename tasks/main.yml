@@ -22,7 +22,6 @@
     host: "{{ netbox_redis_tasks_host }}"
     port: "{{ netbox_redis_tasks_port }}"
     delay: "{{ netbox_redis_wait_for_delay }}"
-    timeout: "{{ netbox_redis_wait_for_timeout }}"
     sleep: "{{ netbox_redis_wait_for_sleep }}"
 
 - name: Wait for redis server (caching)
@@ -30,7 +29,6 @@
     host: "{{ netbox_redis_caching_host }}"
     port: "{{ netbox_redis_caching_port }}"
     delay: "{{ netbox_redis_wait_for_delay }}"
-    timeout: "{{ netbox_redis_wait_for_timeout }}"
     sleep: "{{ netbox_redis_wait_for_sleep }}"
 
 - name: Wait for postgrsql
@@ -38,7 +36,6 @@
     host: "{{ netbox_db_host }}"
     port: "{{ netbox_db_port }}"
     delay: "{{ netbox_db_wait_for_delay }}"
-    timeout: "{{ netbox_db_wait_for_timeout }}"
     sleep: "{{ netbox_db_wait_for_sleep }}"
 
 - name: Include init_netbox.yml
