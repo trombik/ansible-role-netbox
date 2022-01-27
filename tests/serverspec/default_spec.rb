@@ -7,7 +7,6 @@ service_rq = "netbox_rq"
 config_dir = case os[:family]
              when "freebsd"
                "/usr/local/share/netbox/netbox"
-             else
              end
 config = "#{config_dir}/configuration.py"
 user    = case os[:family]
