@@ -2,5 +2,5 @@
 
 - name: Restart netbox
   service:
-    name: netbox
+    name: "{{ netbox_service }}"
     state: restarted

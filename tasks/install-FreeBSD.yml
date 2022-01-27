@@ -1,6 +1,59 @@
 ---
 
 - name: Install netbox
-  pkgng:
-    name: netbox
+  ansible.builtin.pkgng:
+    name: "{{ netbox_package }}"
     state: present
+  register: __netbox_install_netbox
+  notify: Restart netbox
+
+- name: Create symlink to rc script for netbox
+  ansible.builtin.file:
+    src: /usr/local/share/examples/netbox/netboxrc.sample
+    dest: /usr/local/etc/rc.d/netbox
+    state: link
+
+- name: Set execute bit on rc script for netbox
+  ansible.builtin.file:
+    path: /usr/local/share/examples/netbox/netboxrc.sample
+    mode: '0555'
+
+- name: Create symlink to rc script for rq worker
+  ansible.builtin.file:
+    src: /usr/local/share/examples/netbox/netbox_rq.sample
+    dest: /usr/local/etc/rc.d/netbox_rq
+    state: link
+
+- name: Set executable bit on rc script for rq worker
+  # XXX fix the issue in the port
+  ansible.builtin.file:
+    path: /usr/local/share/examples/netbox/netbox_rq.sample
+    mode: '0555'
+
+- name: Do patch manage.py
+  # XXX fix the issue in the port
+  ansible.posix.patch:
+    src: patch-manage.py
+    dest: "{{ netbox_root_dir }}/manage.py"
+
+- name: Set executable bit on manage.py
+  # XXX fix the issue in the port
+  ansible.builtin.file:
+    path: "{{ netbox_root_dir }}/manage.py"
+    mode: '0555'
+
+- name: Create /etc/rc.conf.d/netbox
+  ansible.builtin.template:
+    src: FreeBSD.rc.j2
+    dest: /etc/rc.conf.d/netbox
+  notify: Restart netbox
+
+- name: Enable netbox
+  ansible.builtin.service:
+    name: "{{ netbox_service }}"
+    enabled: yes
+
+- name: Enable netbox_rq
+  ansible.builtin.service:
+    name: "{{ netbox_service_rq }}"
+    enabled: yes

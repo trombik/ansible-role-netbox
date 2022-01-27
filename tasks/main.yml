@@ -1,37 +1,33 @@
 ---
 # tasks file for ansible-role-netbox
 
-- include_vars: "{{ ansible_os_family }}.yml"
+- name: "Inlcude variables from {{ ansible_os_family }}.yml"
+  include_vars: "{{ ansible_os_family }}.yml"
 
-- include: "install-{{ ansible_os_family }}.yml"
+- name: "Include install-{{ ansible_os_family }}.yml"
+  include: "install-{{ ansible_os_family }}.yml"
 
-- name: Create log directory
-  file:
-    path: "{{ netbox_log_dir }}"
-    mode: 0755
-    owner: "{{ netbox_user }}"
-    group: "{{ netbox_group }}"
-    state: directory
-  notify: Restart netbox
-
-- name: Create db directory
-  file:
-    path: "{{ netbox_db_dir }}"
-    mode: 0755
-    owner: "{{ netbox_user }}"
-    group: "{{ netbox_group }}"
-    state: directory
-  notify: Restart netbox
-
-- name: Create netbox.conf
-  template:
-    src: netbox.conf.j2
+- name: Create configuration.py
+  ansible.builtin.template:
+    src: configuration.py.j2
     dest: "{{ netbox_conf_file }}"
-    validate: echo %s
+    owner: "{{ netbox_user }}"
+    group: "{{ netbox_group }}"
+    mode: '0640'
+    validate: "{{ ansible_python['executable'] }} -m py_compile %s"
   notify: Restart netbox
+
+- name: Include init_netbox.yml
+  include: init_netbox.yml
+  when:
+    - __netbox_install_netbox['changed']
+
+- name: Start netbox_rq
+  ansible.builtin.service:
+    name: "{{ netbox_service_rq }}"
+    state: started
 
 - name: Start netbox
-  service:
+  ansible.builtin.service:
     name: "{{ netbox_service }}"
-    enabled: true
     state: started

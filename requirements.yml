@@ -1,0 +1,9 @@
+---
+roles:
+  - name: trombik.nginx
+  - name: trombik.postgresql
+  - name: trombik.redis
+  - name: trombik.sysctl
+  - name: trombik.x509_certificate
+collections:
+  - name: community.general
