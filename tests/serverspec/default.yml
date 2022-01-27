@@ -7,19 +7,25 @@
     - role: ansible-role-netbox
     - role: trombik.nginx
   vars:
-
+    netbox_superuser_name: root
+    netbox_superuser_password: password
+    netbox_superuser_email: dave.null@localhost
     netbox_db_password: password
     netbox_redis_tasks_password: "{{ redis_password }}"
     netbox_redis_caching_password: "{{ redis_password }}"
 
     os_netbox_extra_packages:
       FreeBSD:
+      # XXX these plugins will not work.
         - security/py-netbox-secretstore
+        - net-mgmt/py-netbox-plugin-extensions
       Debian: []
       OpenBSD: []
     netbox_extra_packages: "{{ os_netbox_extra_packages[ansible_os_family] }}"
     netbox_config: |
-      ALLOWED_HOSTS = []
+      ALLOWED_HOSTS = [
+        'localhost',
+      ]
       DATABASE = {
           'NAME': '{{ netbox_db_name }}',
           'USER': '{{ netbox_db_user }}',
@@ -59,7 +65,7 @@
       CORS_ORIGIN_REGEX_WHITELIST = [
           # r'^(https?://)?(\w+\.)?example\.com$',
       ]
-      DEBUG = True
+      DEBUG = False
       EMAIL = {
           'SERVER': 'localhost',
           'PORT': 25,
@@ -76,7 +82,23 @@
           # 'ipam.prefix',
       ]
       INTERNAL_IPS = ('127.0.0.1', '::1')
-      LOGGING = {}
+      LOGGING = {
+          'version': 1,
+          'disable_existing_loggers': False,
+          'handlers': {
+              'file': {
+                  'level': 'DEBUG',
+                  'class': 'logging.FileHandler',
+                  'filename': '{{ netbox_log_file }}',
+              },
+          },
+          'loggers': {
+              'django': {
+                  'handlers': ['file'],
+                  'level': 'DEBUG',
+              },
+          },
+      }
       LOGIN_PERSISTENCE = False
       LOGIN_REQUIRED = False
       LOGIN_TIMEOUT = None

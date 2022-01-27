@@ -4,3 +4,8 @@
   service:
     name: "{{ netbox_service }}"
     state: restarted
+
+- name: Restart netbox_rq
+  service:
+    name: "{{ netbox_service_rq }}"
+    state: restarted

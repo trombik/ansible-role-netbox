@@ -1,14 +1,40 @@
 ---
 
-- name: Do collectstatic
-  community.general.django_manage:
-    app_path: "{{ netbox_root_dir }}"
-    command: collectstatic
-
+# see https://github.com/netbox-community/netbox/blob/develop/upgrade.sh
 - name: Do migrate
   community.general.django_manage:
     app_path: "{{ netbox_root_dir }}"
     command: migrate
+  become: yes
+  become_user: "{{ netbox_user }}"
+
+- name: Do trace_paths
+  community.general.django_manage:
+    app_path: "{{ netbox_root_dir }}"
+    command: trace_paths --no-input
+  become: yes
+  become_user: "{{ netbox_user }}"
+
+- name: Do collectstatic
+  community.general.django_manage:
+    app_path: "{{ netbox_root_dir }}"
+    command: collectstatic
+  become: yes
+  become_user: "{{ netbox_user }}"
+
+- name: Do remove_stale_contenttypes
+  community.general.django_manage:
+    app_path: "{{ netbox_root_dir }}"
+    command: remove_stale_contenttypes --no-input
+  become: yes
+  become_user: "{{ netbox_user }}"
+
+- name: Do clearsessions
+  community.general.django_manage:
+    app_path: "{{ netbox_root_dir }}"
+    command: clearsessions
+  become: yes
+  become_user: "{{ netbox_user }}"
 
 - name: Do createsuperuser
   environment:
@@ -19,18 +45,5 @@
   community.general.django_manage:
     app_path: "{{ netbox_root_dir }}"
     command: createsuperuser --no-input
-
-- name: Do remove_stale_contenttypes
-  community.general.django_manage:
-    app_path: "{{ netbox_root_dir }}"
-    command: remove_stale_contenttypes
-
-- name: Do clearsessions
-  community.general.django_manage:
-    app_path: "{{ netbox_root_dir }}"
-    command: clearsessions
-
-- name: Do trace_paths
-  community.general.django_manage:
-    app_path: "{{ netbox_root_dir }}"
-    command: trace_paths --no-input
+  become: yes
+  become_user: "{{ netbox_user }}"

@@ -1,0 +1,11 @@
+--- netbox_rq.sample.orig	2022-01-25 10:39:34.000000000 +0000
++++ netbox_rq.sample	2022-01-27 05:55:31.667211000 +0000
+@@ -24,7 +24,7 @@
+ start_cmd="netbox_rq_start"
+ start_precmd="netbox_rq_precmd"
+ command="/usr/local/bin/python3.8"
+-command_args="/usr/local/share/netbox/manage.py rqworker"
++command_args="/usr/local/share/netbox/manage.py rqworker high default low"
+ pidfile=${netbox_rq_pidfile:-/var/run/${name}/${name}.pid}
+ netbox_rq_user=${netbox_rq_user:-www}
+ 

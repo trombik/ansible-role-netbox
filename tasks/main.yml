@@ -7,6 +7,15 @@
 - name: "Include install-{{ ansible_os_family }}.yml"
   include: "install-{{ ansible_os_family }}.yml"
 
+- name: Create netbox_log_dir
+  ansible.builtin.file:
+    path: "{{ netbox_log_dir }}"
+    owner: "{{ netbox_user }}"
+    group: "{{ netbox_group }}"
+    mode: "0755"
+    state: directory
+  notify: Restart netbox
+
 - name: Create configuration.py
   ansible.builtin.template:
     src: configuration.py.j2
@@ -16,6 +25,14 @@
     mode: '0640'
     validate: "{{ ansible_python['executable'] }} -m py_compile %s"
   notify: Restart netbox
+
+- name: Create netbox_static_dir
+  ansible.builtin.file:
+    path: "{{ netbox_static_dir }}"
+    owner: "{{ netbox_user }}"
+    group: "{{ netbox_group }}"
+    mode: '0755'
+    state: directory
 
 - name: Wait for redis server (tasks)
   ansible.builtin.wait_for:
@@ -43,14 +60,14 @@
   when:
     - __netbox_install_netbox['changed']
 
-- name: Start netbox_rq
-  ansible.builtin.service:
-    name: "{{ netbox_service_rq }}"
-    state: started
-
 - name: Start netbox
   ansible.builtin.service:
     name: "{{ netbox_service }}"
+    state: started
+
+- name: Start netbox_rq
+  ansible.builtin.service:
+    name: "{{ netbox_service_rq }}"
     state: started
 
 - name: Wait for netbox

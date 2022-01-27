@@ -5,13 +5,17 @@
     name: "{{ netbox_package }}"
     state: present
   register: __netbox_install_netbox
-  notify: Restart netbox
+  notify:
+    - Restart netbox
+    - Restart netbox_rq
 
 - name: Install netbox_extra_packages
   ansible.builtin.pkgng:
     name: "{{ netbox_extra_packages }}"
     state: present
-  notify: Restart netbox
+  notify:
+    - Restart netbox
+    - Restart netbox_rq
 
 - name: Create symlink to rc script for netbox
   ansible.builtin.file:
@@ -31,6 +35,7 @@
     state: link
 
 - name: Set executable bit on rc script for rq worker
+  # XXX the port does not shebangfix it
   # XXX fix the issue in the port
   ansible.builtin.file:
     path: /usr/local/share/examples/netbox/netbox_rq.sample
@@ -41,6 +46,33 @@
   ansible.posix.patch:
     src: patch-manage.py
     dest: "{{ netbox_root_dir }}/manage.py"
+    backup: yes
+  notify:
+    - Restart netbox
+    - Restart netbox_rq
+
+- name: Do patch netboxrc.sample
+  # XXX forwarding logs to syslog does not work because amount of one log
+  # message can be bigger than syslog socket can accept. in fact, no log is
+  # shown by the default install.
+  #
+  # XXX fix the issue in the port
+  ansible.posix.patch:
+    src: patch-netboxrc.sample
+    dest: /usr/local/share/examples/netbox/netboxrc.sample
+    backup: yes
+  notify: Restart netbox
+
+- name: Do patch netbox_rq.sample
+  # XXX the example is not the same one provided by the upstream
+  # see https://github.com/netbox-community/netbox/blob/develop/contrib/netbox-rq.service
+  #
+  # XXX fix the issue in the port
+  ansible.builtin.patch:
+    src: patch-netbox_rq.sample
+    dest: /usr/local/share/examples/netbox/netbox_rq.sample
+    backup: yes
+  notify: Restart netbox_rq
 
 - name: Set executable bit on manage.py
   # XXX fix the issue in the port

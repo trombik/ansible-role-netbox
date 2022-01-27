@@ -10,6 +10,8 @@ netbox_conf_file: "{{ netbox_conf_dir }}/configuration.py"
 netbox_docs_root_dir: "{{ __netbox_docs_root_dir }}"
 netbox_static_dir: "{{ __netbox_static_dir }}"
 netbox_root_dir: "{{ __netbox_root_dir }}"
+netbox_log_dir: "{{ __netbox_log_dir }}"
+netbox_log_file: "{{ netbox_log_dir }}/netbox.log"
 netbox_bind_scheme: http
 netbox_bind_address: 127.0.0.1
 netbox_bind_port: 8001
@@ -35,7 +37,7 @@ netbox_db_wait_for_delay: 0
 netbox_db_wait_for_sleep: 1
 netbox_wait_for_delay: 0
 netbox_wait_for_sleep: 1
-netbox_superuser_name: root
-netbox_superuser_password: password
-netbox_superuser_email: dave.null@localhost
+netbox_superuser_name: ""
+netbox_superuser_password: ""
+netbox_superuser_email: ""
 netbox_flags: ""

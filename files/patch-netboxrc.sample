@@ -1,0 +1,20 @@
+--- netboxrc.sample.~1~	2022-01-25 10:39:34.000000000 +0000
++++ netboxrc.sample	2022-01-27 06:14:09.966984000 +0000
+@@ -65,7 +65,7 @@
+ # Read settings from confguration file if set
+ if checkyesno netbox_use_config && [ -f "${netbox_config}" ]; then 
+ 	command_args="${netbox_args} -D \
+-		--log-syslog --log-syslog-prefix ${name} \
++		--log-syslog-prefix ${name} \
+ 		--log-syslog-to unix:///var/run/log#dgram \
+ 		--disable-redirect-access-to-syslog \
+ 		-p ${pidfile} --pythonpath ${netbox_path} \
+@@ -73,7 +73,7 @@
+ 		netbox.wsgi"
+ else
+ 	command_args="${netbox_args} -D \
+-		--log-syslog --log-syslog-prefix ${name} \
++		--log-syslog-prefix ${name} \
+ 		--log-syslog-to unix:///var/run/log#dgram \
+ 		--disable-redirect-access-to-syslog \
+ 		-p ${pidfile} --pythonpath ${netbox_path} \
