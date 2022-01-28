@@ -1,97 +1,55 @@
 ---
 
-- name: Install netbox
+- name: Install netbox_required_packages
   ansible.builtin.pkgng:
-    name: "{{ netbox_package }}"
+    name: "{{ netbox_required_packages }}"
     state: present
-  register: __netbox_install_netbox
-  notify:
-    - Restart netbox
-    - Restart netbox_rq
 
 - name: Install netbox_extra_packages
   ansible.builtin.pkgng:
     name: "{{ netbox_extra_packages }}"
     state: present
-  notify:
-    - Restart netbox
-    - Restart netbox_rq
 
-- name: Create symlink to rc script for netbox
-  ansible.builtin.file:
-    src: /usr/local/share/examples/netbox/netboxrc.sample
-    dest: /usr/local/etc/rc.d/netbox
-    state: link
-
-- name: Set execute bit on rc script for netbox
-  ansible.builtin.file:
-    path: /usr/local/share/examples/netbox/netboxrc.sample
-    mode: '0555'
-
-- name: Create symlink to rc script for rq worker
-  ansible.builtin.file:
-    src: /usr/local/share/examples/netbox/netbox_rq.sample
+- name: Create netbox_rq rc script
+  template:
+    src: netbox_rq.rc.j2
     dest: /usr/local/etc/rc.d/netbox_rq
-    state: link
-
-- name: Set executable bit on rc script for rq worker
-  # XXX the port does not shebangfix it
-  # XXX fix the issue in the port
-  ansible.builtin.file:
-    path: /usr/local/share/examples/netbox/netbox_rq.sample
-    mode: '0555'
-
-- name: Do patch manage.py
-  # XXX fix the issue in the port
-  ansible.posix.patch:
-    src: patch-manage.py
-    dest: "{{ netbox_root_dir }}/manage.py"
-    backup: yes
+    mode: '0755'
   notify:
-    - Restart netbox
     - Restart netbox_rq
 
-- name: Do patch netboxrc.sample
-  # XXX forwarding logs to syslog does not work because amount of one log
-  # message can be bigger than syslog socket can accept. in fact, no log is
-  # shown by the default install.
-  #
-  # XXX fix the issue in the port
-  ansible.posix.patch:
-    src: patch-netboxrc.sample
-    dest: /usr/local/share/examples/netbox/netboxrc.sample
-    backup: yes
-  notify: Restart netbox
+- name: Create netbox rc script
+  template:
+    src: netbox.rc.j2
+    dest: /usr/local/etc/rc.d/netbox
+    mode: '0755'
+  notify:
+    - Restart netbox
 
-- name: Do patch netbox_rq.sample
-  # XXX the example is not the same one provided by the upstream
-  # see https://github.com/netbox-community/netbox/blob/develop/contrib/netbox-rq.service
-  #
-  # XXX fix the issue in the port
-  ansible.builtin.patch:
-    src: patch-netbox_rq.sample
-    dest: /usr/local/share/examples/netbox/netbox_rq.sample
-    backup: yes
-  notify: Restart netbox_rq
-
-- name: Set executable bit on manage.py
-  # XXX fix the issue in the port
-  ansible.builtin.file:
-    path: "{{ netbox_root_dir }}/manage.py"
-    mode: '0555'
-
-- name: Create /etc/rc.conf.d/netbox
-  ansible.builtin.template:
-    src: FreeBSD.rc.j2
-    dest: /etc/rc.conf.d/netbox
-  notify: Restart netbox
-
-- name: Enable netbox
+- name: Enable netbox_service
   ansible.builtin.service:
     name: "{{ netbox_service }}"
     enabled: yes
 
-- name: Enable netbox_rq
+- name: Enable netbox_service_rq
   ansible.builtin.service:
     name: "{{ netbox_service_rq }}"
     enabled: yes
+
+- name: Create /etc/rc.conf.d/netbox
+  ansible.builtin.template:
+    src: netbox.rc.conf.j2
+    dest: "/etc/rc.conf.d/{{ netbox_service }}"
+    mode: "0644"
+    validate: sh -n %s
+  notify:
+    - Restart netbox
+
+- name: Create /etc/rc.conf.d/netbox_rq
+  ansible.builtin.template:
+    src: netbox_rq.rc.conf.j2
+    dest: "/etc/rc.conf.d/{{ netbox_service_rq }}"
+    mode: "0644"
+    validate: sh -n %s
+  notify:
+    - Restart netbox_rq

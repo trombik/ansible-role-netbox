@@ -13,6 +13,14 @@
     netbox_db_password: password
     netbox_redis_tasks_password: "{{ redis_password }}"
     netbox_redis_caching_password: "{{ redis_password }}"
+    netbox_git_version: v3.1.6
+
+    project_netbox_plugins:
+      - netbox-qrcode
+    netbox_local_requirements: |
+      {% for i in project_netbox_plugins %}
+      {{ i }}
+      {% endfor %}
 
     os_netbox_extra_packages:
       FreeBSD:
@@ -103,7 +111,11 @@
       LOGIN_REQUIRED = False
       LOGIN_TIMEOUT = None
       METRICS_ENABLED = False
-      PLUGINS = []
+      PLUGINS = [
+      {% for p in project_netbox_plugins %}
+        '{{ p | regex_replace("-", "_") }}',
+      {% endfor %}
+      ]
       REMOTE_AUTH_ENABLED = False
       REMOTE_AUTH_BACKEND = 'netbox.authentication.RemoteUserBackend'
       REMOTE_AUTH_HEADER = 'HTTP_REMOTE_USER'

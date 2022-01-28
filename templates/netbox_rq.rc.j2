@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# PROVIDE: netbox_rq
+# REQUIRE: LOGIN
+# BEFORE:  securelevel
+# KEYWORD: shutdown
+
+# Add the following line to /etc/rc.conf to enable `netbox_rq':
+#
+# netbox_rq_enable="YES"
+
+. /etc/rc.subr
+
+name="netbox_rq"
+rcvar="${name}_enable"
+
+command="/usr/sbin/daemon"
+procname="{{ netbox_venv_dir }}/bin/python3"
+pidfile="{{ netbox_root_dir }}/$name.pid"
+
+load_rc_config "$name"
+: ${netbox_rq_enable="NO"}
+: ${netbox_rq_user_name="netbox"}
+: ${netbox_rq_app_path="{{ netbox_app_dir }}"}
+
+command_args="-p ${pidfile} -u ${netbox_rq_user_name} -- ${procname} ${netbox_rq_app_path}/manage.py rqworker high default low"
+
+run_rc_command "$1"

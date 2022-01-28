@@ -10,16 +10,21 @@ service = "netbox"
 service_rq = "netbox_rq"
 config_dir = case os[:family]
              when "freebsd"
-               "/usr/local/share/netbox/netbox"
+               "/usr/local/netbox/netbox/netbox/netbox"
              end
 config = "#{config_dir}/configuration.py"
+local_requirements_txt = case os[:family]
+                         when "freebsd"
+                           "/usr/local/netbox/netbox/local_requirements.txt"
+                         end
+plugins = %w[
+  netbox-qrcode
+]
 log_dir = "/var/log/netbox"
 log_file = "#{log_dir}/netbox.log"
 user    = case os[:family]
           when "openbsd"
             "_netbox"
-          when "freebsd"
-            "www"
           else
             "netbox"
           end
@@ -51,6 +56,17 @@ describe file(config) do
   its(:content) { should match Regexp.escape("Managed by ansible") }
 end
 
+describe file local_requirements_txt do
+  it { should be_file }
+  it { should be_owned_by user }
+  it { should be_grouped_into group }
+  it { should be_mode 644 }
+  its(:content) { should match Regexp.escape("Managed by ansible") }
+  plugins.each do |p|
+    its(:content) { should match Regexp.escape("#{p}") }
+  end
+end
+
 describe file log_dir do
   it { should exist }
   it { should be_directory }
@@ -77,30 +93,29 @@ when "freebsd"
     its(:content) { should match(/Managed by ansible/) }
   end
 
-  describe file("/usr/local/etc/rc.d/netbox") do
-    it { should exist }
-    it { should be_symlink }
-  end
-
-  describe file("/usr/local/share/examples/netbox/netboxrc.sample") do
+  describe file("/etc/rc.conf.d/netbox_rq") do
     it { should exist }
     it { should be_file }
     it { should be_owned_by "root" }
     it { should be_grouped_into "wheel" }
-    it { should be_mode 555 }
+    it { should be_mode 644 }
+    its(:content) { should match(/Managed by ansible/) }
+  end
+
+  describe file("/usr/local/etc/rc.d/netbox") do
+    it { should exist }
+    it { should be_file }
+    it { should be_mode 755 }
+    it { should be_owned_by "root" }
+    it { should be_grouped_into "wheel" }
   end
 
   describe file("/usr/local/etc/rc.d/netbox_rq") do
     it { should exist }
-    it { should be_symlink }
-  end
-
-  describe file("/usr/local/share/examples/netbox/netbox_rq.sample") do
-    it { should exist }
     it { should be_file }
+    it { should be_mode 755 }
     it { should be_owned_by "root" }
     it { should be_grouped_into "wheel" }
-    it { should be_mode 555 }
   end
 end
 

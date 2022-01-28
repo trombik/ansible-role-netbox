@@ -7,6 +7,68 @@
 - name: "Include install-{{ ansible_os_family }}.yml"
   include: "install-{{ ansible_os_family }}.yml"
 
+- name: Create netbox_group
+  ansible.builtin.group:
+    name: "{{ netbox_group }}"
+
+- name: Create netbox_user
+  ansible.builtin.user:
+    name: "{{ netbox_user }}"
+    create_home: yes
+    group: "{{ netbox_group }}"
+    home: "{{ netbox_home_dir }}"
+
+- name: Install netbox via git
+  ansible.builtin.git:
+    repo: "{{ netbox_git_repo }}"
+    version: "{{ netbox_git_version }}"
+    update: "{{ netbox_git_update }}"
+    dest: "{{ netbox_root_dir }}"
+  register: __netbox_install_netbox
+  become: yes
+  become_user: "{{ netbox_user }}"
+  notify:
+    - Restart netbox
+    - Restart netbox_rq
+
+- name: Install pip packages listed in requirements.txt
+  ansible.builtin.pip:
+    requirements: "{{ netbox_root_dir }}/requirements.txt"
+    extra_args: ""
+    virtualenv: "{{ netbox_venv_dir }}"
+    virtualenv_command: "{{ ansible_python['executable'] }} -m venv"
+  become: true
+  become_user: "{{ netbox_user }}"
+  notify:
+    - Restart netbox
+    - Restart netbox_rq
+
+- name: Create local_requirements.txt
+  ansible.builtin.template:
+    src: local_requirements.txt.j2
+    dest: "{{ netbox_root_dir }}/local_requirements.txt"
+    mode: "0644"
+    owner: "{{ netbox_user }}"
+    group: "{{ netbox_group }}"
+  become: true
+  become_user: "{{ netbox_user }}"
+  notify:
+    - Restart netbox
+    - Restart netbox_rq
+
+- name: Install pip packages listed in local_requirements.txt
+  ansible.builtin.pip:
+    requirements: "{{ netbox_root_dir }}/local_requirements.txt"
+    extra_args: ""
+    virtualenv: "{{ netbox_venv_dir }}"
+    virtualenv_command: "{{ ansible_python['executable'] }} -m venv"
+  register: __netbox_register_local_requirements
+  become: true
+  become_user: "{{ netbox_user }}"
+  notify:
+    - Restart netbox
+    - Restart netbox_rq
+
 - name: Create netbox_log_dir
   ansible.builtin.file:
     path: "{{ netbox_log_dir }}"
@@ -24,7 +86,9 @@
     group: "{{ netbox_group }}"
     mode: '0640'
     validate: "{{ ansible_python['executable'] }} -m py_compile %s"
-  notify: Restart netbox
+  notify:
+    - Restart netbox
+    - Restart netbox_rq
 
 - name: Create netbox_static_dir
   ansible.builtin.file:
@@ -48,7 +112,7 @@
     delay: "{{ netbox_redis_wait_for_delay }}"
     sleep: "{{ netbox_redis_wait_for_sleep }}"
 
-- name: Wait for postgrsql
+- name: Wait for postgresql
   ansible.builtin.wait_for:
     host: "{{ netbox_db_host }}"
     port: "{{ netbox_db_port }}"
@@ -59,6 +123,30 @@
   include: init_netbox.yml
   when:
     - __netbox_install_netbox['changed']
+
+- name: Do migrate when local_requirements changed
+  community.general.django_manage:
+    app_path: "{{ netbox_app_dir }}"
+    virtualenv: "{{ netbox_venv_dir }}"
+    command: migrate
+  become: yes
+  become_user: "{{ netbox_user }}"
+  notify:
+    - Restart netbox
+  when:
+    - __netbox_register_local_requirements['changed']
+
+- name: Do collectstatic when local_requirements changed
+  community.general.django_manage:
+    app_path: "{{ netbox_app_dir }}"
+    virtualenv: "{{ netbox_venv_dir }}"
+    command: collectstatic
+  become: yes
+  become_user: "{{ netbox_user }}"
+  notify:
+    - Restart netbox
+  when:
+    - __netbox_register_local_requirements['changed']
 
 - name: Start netbox
   ansible.builtin.service:

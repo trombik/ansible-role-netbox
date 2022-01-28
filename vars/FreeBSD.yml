@@ -1,11 +1,15 @@
 ---
-__netbox_user: www
-__netbox_group: www
+__netbox_user: netbox
+__netbox_group: netbox
 __netbox_service: netbox
 __netbox_service_rq: netbox_rq
-__netbox_package: net-mgmt/netbox
-__netbox_root_dir: /usr/local/share/netbox
-__netbox_conf_dir: /usr/local/share/netbox/netbox
-__netbox_docs_root_dir: /usr/local/share/doc/netbox
-__netbox_static_dir: /usr/local/share/netbox/static
+__netbox_home_dir: /usr/local/netbox
 __netbox_log_dir: /var/log/netbox
+__netbox_required_packages:
+  - devel/py-pip
+  - databases/py-psycopg2
+  - textproc/libxml2
+  - textproc/libxslt
+  - devel/libffi
+  - devel/git
+  - lang/rust
