@@ -119,8 +119,8 @@
     delay: "{{ netbox_db_wait_for_delay }}"
     sleep: "{{ netbox_db_wait_for_sleep }}"
 
-- name: Include init_netbox.yml
-  include: init_netbox.yml
+- name: Include init-netbox.yml
+  include: init-netbox.yml
   when:
     - __netbox_install_netbox['changed']
 
