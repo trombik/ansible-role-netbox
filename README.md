@@ -2,6 +2,8 @@
 
 A brief description of the role goes here.
 
+[![kitchen](https://github.com/trombik/ansible-role-netbox/actions/workflows/kitchen.yml/badge.svg)](https://github.com/trombik/ansible-role-netbox/actions/workflows/kitchen.yml)
+
 # Requirements
 
 None
