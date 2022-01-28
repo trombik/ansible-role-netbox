@@ -63,7 +63,7 @@ describe file local_requirements_txt do
   it { should be_mode 644 }
   its(:content) { should match Regexp.escape("Managed by ansible") }
   plugins.each do |p|
-    its(:content) { should match Regexp.escape("#{p}") }
+    its(:content) { should match Regexp.escape(p.to_s) }
   end
 end
 
