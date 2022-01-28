@@ -6,10 +6,11 @@ __netbox_service_rq: netbox_rq
 __netbox_home_dir: /usr/local/netbox
 __netbox_log_dir: /var/log/netbox
 __netbox_required_packages:
-  - devel/py-pip
   - databases/py-psycopg2
+  - devel/git
+  - devel/libffi
+  - devel/py-pip
+  - graphics/py-pillow
+  - lang/rust
   - textproc/libxml2
   - textproc/libxslt
-  - devel/libffi
-  - devel/git
-  - lang/rust
