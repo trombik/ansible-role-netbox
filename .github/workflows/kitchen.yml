@@ -26,4 +26,4 @@ jobs:
 
       - name: Run test-kitchen
         run: |
-          bundle exec kitchen list
+          bundle exec kitchen test
