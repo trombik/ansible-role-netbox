@@ -13,6 +13,9 @@
     netbox_db_password: password
     netbox_redis_tasks_password: "{{ redis_password }}"
     netbox_redis_caching_password: "{{ redis_password }}"
+
+    # see available versions at:
+    # https://github.com/netbox-community/netbox/releases
     netbox_git_version: v3.1.6
 
     project_netbox_plugins:
@@ -22,14 +25,6 @@
       {{ i }}
       {% endfor %}
 
-    os_netbox_extra_packages:
-      FreeBSD:
-      # XXX these plugins will not work.
-        - security/py-netbox-secretstore
-        - net-mgmt/py-netbox-plugin-extensions
-      Debian: []
-      OpenBSD: []
-    netbox_extra_packages: "{{ os_netbox_extra_packages[ansible_os_family] }}"
     netbox_config: |
       ALLOWED_HOSTS = [
         'localhost',
@@ -60,7 +55,7 @@
               # 'INSECURE_SKIP_TLS_VERIFY': False,
           }
       }
-      # python3.8 /usr/local/share/netbox/generate_secret_key.py
+      # python3 /usr/local/netbox/netbox/netbox/generate_secret_key.py
       SECRET_KEY = 'eu806L3V2$^ykz1tKAkZ=^$oGVXS!bcQUrhesk4mknFFxNz!df'
       ADMINS = [
           ('John Doe', 'jdoe@example.com'),
@@ -282,10 +277,7 @@
           }
         }
       }
-    nginx_config_fragments:
-      - name: foo.conf
-        config: "# FOO"
-        state: present
+    nginx_config_fragments: []
     nginx_extra_packages_by_os:
       FreeBSD:
         - security/py-certbot-nginx
