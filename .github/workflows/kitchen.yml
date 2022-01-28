@@ -1,0 +1,29 @@
+---
+name: kitchen
+on:
+  - pull_request
+  - push
+jobs:
+  kitchen:
+    runs-on: macos-10.15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+          bundler-cache: true
+
+      - name: Show vagrant version
+        run: |
+          Vagrant --version
+
+      - name: Show VirtualBox version
+        run: |
+          virtualbox -h
+
+      - name: Run test-kitchen
+        run: |
+          bundle exec kitchen list
