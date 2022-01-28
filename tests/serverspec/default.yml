@@ -256,7 +256,6 @@
       }
       http {
         include {{ nginx_conf_dir }}/mime.types;
-        include {{ nginx_conf_fragments_dir }}/foo.conf;
         access_log {{ nginx_access_log_file }};
         default_type application/octet-stream;
         sendfile on;
