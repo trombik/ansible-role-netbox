@@ -1,0 +1,19 @@
+#!/bin/ksh
+
+netbox_root="{{ netbox_root_dir }}"
+netbox_app="{{ netbox_app_dir }}"
+netbox_venv="{{ netbox_venv_dir }}"
+netbox_gunicorn_config="${netbox_root}/contrib/gunicorn.py"
+
+daemon="${netbox_venv}/bin/python3"
+daemon_flags="${netbox_venv}/bin/gunicorn --daemon --pythonpath ${netbox_app} --config ${netbox_gunicorn_config} netbox.wsgi"
+daemon_user="{{ netbox_user }}"
+
+. /etc/rc.d/rc.subr
+
+rc_start() {
+	. ${netbox_venv}/bin/activate
+	${rcexec} "${daemon} ${daemon_flags}"
+}
+
+rc_cmd $1

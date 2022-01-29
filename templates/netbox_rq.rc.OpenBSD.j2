@@ -1,0 +1,17 @@
+#!/bin/ksh
+
+netbox_app="{{ netbox_app_dir }}"
+netbox_venv="{{ netbox_venv_dir }}"
+
+daemon="${netbox_venv}/bin/python3"
+daemon_flags="${netbox_app}/manage.py rqworker high default low"
+daemon_user="{{ netbox_user }}"
+
+. /etc/rc.d/rc.subr
+
+rc_start() {
+	. ${netbox_venv}/bin/activate
+	${rcexec} "${daemon} ${daemon_flags} < /dev/null 2>&1 | logger -t netbox &"
+}
+
+rc_cmd $1

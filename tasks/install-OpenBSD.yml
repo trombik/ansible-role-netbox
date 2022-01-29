@@ -1,0 +1,37 @@
+---
+
+- name: Install netbox_required_packages
+  community.general.openbsd_pkg:
+    name: "{{ netbox_required_packages }}"
+    state: present
+
+- name: Install netbox_extra_packages
+  community.general.openbsd_pkg:
+    name: "{{ netbox_extra_packages }}"
+    state: present
+
+- name: Create netbox rc script
+  template:
+    src: netbox.rc.OpenBSD.j2
+    dest: /etc/rc.d/netbox
+    mode: '0755'
+  notify:
+    - Restart netbox
+
+- name: Create netbox_rq rc script
+  template:
+    src: netbox_rq.rc.OpenBSD.j2
+    dest: /etc/rc.d/netbox_rq
+    mode: '0755'
+  notify:
+    - Restart netbox_rq
+
+- name: Enable netbox_service_rq
+  ansible.builtin.service:
+    name: "{{ netbox_service_rq }}"
+    enabled: yes
+
+- name: Enable netbox_service
+  ansible.builtin.service:
+    name: "{{ netbox_service }}"
+    enabled: yes
