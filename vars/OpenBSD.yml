@@ -1,0 +1,16 @@
+---
+__netbox_user: _netbox
+__netbox_group: _netbox
+__netbox_service: netbox
+__netbox_service_rq: netbox_rq
+__netbox_home_dir: /var/www/htdocs/netbox
+__netbox_log_dir: /var/log/netbox
+__netbox_required_packages:
+  - py3-psycopg2
+  - git
+  - libffi
+  - py3-pip
+  - py3-Pillow
+  - rust
+  - libxml
+  - libxslt

@@ -1,6 +1,10 @@
 ---
 driver:
   name: vagrant
+  customize:
+    memory: 2048
+  # XXX increase boot_timeout. Ubuntu 20.04 sometimes timeouts in CI.
+  boot_timeout: 600
 
 transport:
   name: rsync
@@ -14,6 +18,7 @@ provisioner:
   ansible_verbose: true
   ansible_extra_flags: <%= ENV['ANSIBLE_EXTRA_FLAGS'] %>
   requirements_path: requirements.yml
+  requirements_collection_path: requirements.yml
   http_proxy: <%= ENV['ANSIBLE_PROXY'] %>
   idempotency_test: true
   additional_copy_path:
@@ -30,6 +35,19 @@ platforms:
         shell: '/bin/sh'
       network:
         - ["forwarded_port", {guest: 80, host: 8000}]
+    provisioner:
+      extra_vars:
+        ansible_python_interpreter: '/usr/local/bin/python3'
+
+  - name: openbsd-6.9-amd64
+    driver:
+      box: trombik/ansible-openbsd-6.9-amd64
+      box_check_update: false
+    driver_config:
+      ssh:
+        shell: '/bin/sh'
+      network:
+        - ["forwarded_port", {guest: 80, host: 8001}]
     provisioner:
       extra_vars:
         ansible_python_interpreter: '/usr/local/bin/python3'

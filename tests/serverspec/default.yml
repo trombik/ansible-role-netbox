@@ -266,7 +266,11 @@
           client_max_body_size 25m;
 
           location /static/ {
+      {% if ansible_os_family == 'OpenBSD' %}
+            alias /htdocs/netbox/netbox/netbox/static/;
+      {% else %}
             alias {{ netbox_static_dir }}/;
+      {% endif %}
           }
           location / {
             proxy_pass {{ netbox_bind_scheme }}://{{ netbox_bind_address }}:{{ netbox_bind_port }};

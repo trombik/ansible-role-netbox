@@ -5,11 +5,15 @@ extra_packages = []
 service = "netbox"
 service_rq = "netbox_rq"
 config_dir = case os[:family]
+             when "openbsd"
+               "/var/www/htdocs/netbox/netbox/netbox/netbox"
              when "freebsd"
                "/usr/local/netbox/netbox/netbox/netbox"
              end
 config = "#{config_dir}/configuration.py"
 local_requirements_txt = case os[:family]
+                         when "openbsd"
+                           "/var/www/htdocs/netbox/netbox/local_requirements.txt"
                          when "freebsd"
                            "/usr/local/netbox/netbox/local_requirements.txt"
                          end
