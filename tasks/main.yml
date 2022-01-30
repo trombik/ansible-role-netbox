@@ -42,6 +42,19 @@
   notify:
     - Restart netbox
     - Restart netbox_rq
+  # XXX disable HTTP/2. `cargo build` fails when building cryptography on
+  # macos GitHub Actions runner. this does not happen on FreeBSD, but on
+  # OpenBSD.
+  #
+  # [92] Stream error in the HTTP/2 framing layer (HTTP/2 stream 3 was not closed cleanly before end of the underlying stream)
+  #
+  # libcurl, which cargo uses to download files, reports an error but cargo
+  # does not retry.
+  #
+  # https://github.com/rust-lang/cargo/issues/6513
+  # https://github.com/rust-lang/cargo/pull/8102
+  environment:
+    CARGO_HTTP_MULTIPLEXING: "false"
 
 - name: Create local_requirements.txt
   ansible.builtin.template:
@@ -68,6 +81,8 @@
   notify:
     - Restart netbox
     - Restart netbox_rq
+  environment:
+    CARGO_HTTP_MULTIPLEXING: "false"
 
 - name: Create netbox_log_dir
   ansible.builtin.file:
