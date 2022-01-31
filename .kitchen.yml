@@ -65,6 +65,17 @@ platforms:
       extra_vars:
         ansible_python_interpreter: '/usr/local/bin/python3'
 
+  - name: ubuntu-20.04-amd64
+    driver:
+      box: trombik/ansible-ubuntu-20.04-amd64
+      box_check_update: false
+    driver_config:
+      network:
+        - ["forwarded_port", {guest: 80, host: 8003}]
+    provisioner:
+      extra_vars:
+        ansible_python_interpreter: '/usr/bin/python3'
+
 suites:
   - name: default
     provisioner:

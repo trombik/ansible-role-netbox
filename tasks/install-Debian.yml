@@ -1,0 +1,45 @@
+---
+
+- name: Install netbox_required_packages
+  ansible.builtin.apt:
+    name: "{{ netbox_required_packages }}"
+    state: present
+
+- name: Install netbox_extra_packages
+  ansible.builtin.apt:
+    name: "{{ netbox_extra_packages }}"
+    state: present
+
+- name: Create netbox-rq systemd unit file
+  ansible.builtin.template:
+    src: systemd.netbox-rq.j2
+    dest: /etc/systemd/system/netbox-rq.service
+    mode: '0644'
+  register: __register_systemd_unit_file_netbox_rq
+  notify:
+    - Restart netbox_rq
+
+- name: Create netbox systemd unit file
+  ansible.builtin.template:
+    src: systemd.netbox.j2
+    dest: /etc/systemd/system/netbox.service
+    mode: '0644'
+  register: __register_systemd_unit_file_netbox
+  notify:
+    - Restart netbox
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  when:
+    - __register_systemd_unit_file_netbox_rq['changed'] or __register_systemd_unit_file_netbox['changed']
+
+- name: Enable netbox_service
+  ansible.builtin.service:
+    name: "{{ netbox_service }}"
+    enabled: yes
+
+- name: Enable netbox_service_rq
+  ansible.builtin.service:
+    name: "{{ netbox_service_rq }}"
+    enabled: yes
