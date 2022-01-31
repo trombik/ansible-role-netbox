@@ -3,8 +3,15 @@ require "serverspec"
 
 extra_packages = []
 service = "netbox"
-service_rq = "netbox_rq"
+service_rq = case os[:family]
+             when "ubuntu"
+               "netbox-rq"
+             else
+               "netbox_rq"
+             end
 config_dir = case os[:family]
+             when "ubuntu"
+               "/opt/netbox/netbox/netbox/netbox"
              when "openbsd"
                "/var/www/htdocs/netbox/netbox/netbox/netbox"
              when "freebsd"
@@ -12,6 +19,8 @@ config_dir = case os[:family]
              end
 config = "#{config_dir}/configuration.py"
 local_requirements_txt = case os[:family]
+                         when "ubuntu"
+                           "/opt/netbox/netbox/local_requirements.txt"
                          when "openbsd"
                            "/var/www/htdocs/netbox/netbox/local_requirements.txt"
                          when "freebsd"
