@@ -9,15 +9,19 @@ service_rq = case os[:family]
              else
                "netbox_rq"
              end
-config_dir = case os[:family]
-             when "ubuntu"
-               "/opt/netbox/netbox/netbox/netbox"
-             when "openbsd"
-               "/var/www/htdocs/netbox/netbox/netbox/netbox"
-             when "freebsd"
-               "/usr/local/netbox/netbox/netbox/netbox"
-             end
+root_dir = case os[:family]
+           when "ubuntu"
+             "/opt/netbox"
+           when "openbsd"
+             "/var/www/htdocs/netbox"
+           when "freebsd"
+             "/usr/local/netbox"
+           else
+             raise format("unknown os[:family]: %s", os[:family])
+           end
+config_dir = "#{root_dir}/netbox/netbox/netbox"
 config = "#{config_dir}/configuration.py"
+gunicorn_config = "#{config_dir}/gunicorn.py"
 local_requirements_txt = case os[:family]
                          when "ubuntu"
                            "/opt/netbox/netbox/local_requirements.txt"
@@ -58,6 +62,15 @@ describe file(config) do
   it { should be_owned_by user }
   it { should be_grouped_into group }
   it { should be_mode 640 }
+  its(:content) { should match Regexp.escape("Managed by ansible") }
+end
+
+describe file gunicorn_config do
+  it { should exist }
+  it { should be_file }
+  it { should be_owned_by user }
+  it { should be_grouped_into group }
+  it { should be_mode 644 }
   its(:content) { should match Regexp.escape("Managed by ansible") }
 end
 

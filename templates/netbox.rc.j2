@@ -23,7 +23,7 @@ load_rc_config "$name"
 : ${netbox_user="{{ netbox_user }}"}
 : ${netbox_pythonpath="{{ netbox_app_dir }}"}
 : ${netbox_gunicorn_bin="{{ netbox_venv_dir }}/bin/gunicorn"}
-: ${netbox_gunicorn_config="{{ netbox_root_dir }}/contrib/gunicorn.py"}
+: ${netbox_gunicorn_config="{{ netbox_gunicorn_conf_file }}"}
 : ${netbox_gunicorn_flags=""}
 
 command_args="${netbox_gunicorn_bin} --daemon --pid ${pidfile} --pythonpath ${netbox_pythonpath} --config ${netbox_gunicorn_config} ${netbox_gunicorn_flags} netbox.wsgi"

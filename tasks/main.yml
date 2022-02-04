@@ -105,6 +105,17 @@
     - Restart netbox
     - Restart netbox_rq
 
+- name: Create gunicorn.py
+  ansible.builtin.template:
+    src: gunicorn.py.j2
+    dest: "{{ netbox_gunicorn_conf_file }}"
+    mode: "0644"
+    owner: "{{ netbox_user }}"
+    group: "{{ netbox_group }}"
+    validate: "{{ ansible_python['executable'] }} -m py_compile %s"
+  notify:
+    - Restart netbox
+
 - name: Create netbox_static_dir
   ansible.builtin.file:
     path: "{{ netbox_static_dir }}"
