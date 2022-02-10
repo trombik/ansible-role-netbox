@@ -19,4 +19,5 @@ __netbox_required_packages:
   - libpq-dev
   - libssl-dev
   - zlib1g-dev
+  - rustc
 __netbox_supervisor_conf_dir: /etc/supervisor

@@ -14,3 +14,4 @@ __netbox_required_packages:
   - rust
   - libxml
   - libxslt
+__netbox_supervisor_conf_dir: /etc/supervisor

@@ -1,0 +1,25 @@
+---
+
+- name: Create netbox-rq systemd unit file
+  ansible.builtin.template:
+    src: systemd.netbox-rq.j2
+    dest: /etc/systemd/system/netbox-rq.service
+    mode: '0644'
+  register: __register_systemd_unit_file_netbox_rq
+  notify:
+    - "{{ __fact_netbox_handler_for_netbox_rq }}"
+
+- name: Create netbox systemd unit file
+  ansible.builtin.template:
+    src: systemd.netbox.j2
+    dest: /etc/systemd/system/netbox.service
+    mode: '0644'
+  register: __register_systemd_unit_file_netbox
+  notify:
+    - "{{ __fact_netbox_handler_for_netbox }}"
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  when:
+    - __register_systemd_unit_file_netbox_rq['changed'] or __register_systemd_unit_file_netbox['changed']

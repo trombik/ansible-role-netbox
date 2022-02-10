@@ -10,7 +10,7 @@ service_rq = case os[:family]
                "netbox_rq"
              end
 root_dir = case os[:family]
-           when "ubuntu"
+           when "ubuntu", "devuan"
              "/opt/netbox"
            when "openbsd"
              "/var/www/htdocs/netbox"
@@ -23,7 +23,7 @@ config_dir = "#{root_dir}/netbox/netbox/netbox"
 config = "#{config_dir}/configuration.py"
 gunicorn_config = "#{config_dir}/gunicorn.py"
 local_requirements_txt = case os[:family]
-                         when "ubuntu"
+                         when "ubuntu", "devuan"
                            "/opt/netbox/netbox/local_requirements.txt"
                          when "openbsd"
                            "/var/www/htdocs/netbox/netbox/local_requirements.txt"
@@ -135,16 +135,43 @@ when "freebsd"
     it { should be_owned_by "root" }
     it { should be_grouped_into "wheel" }
   end
+when "devuan"
+  describe package "supervisor" do
+    it { should be_installed }
+  end
+
+  describe service "supervisor" do
+    it { should be_running }
+  end
+
+  describe file "/etc/supervisor/conf.d/netbox.conf" do
+    it { should exist }
+    it { should be_file }
+    it { should be_mode 644 }
+    it { should be_owned_by "root" }
+    it { should be_grouped_into "root" }
+  end
 end
 
-describe service(service_rq) do
-  it { should be_running }
-  it { should be_enabled }
-end
+case os[:family]
+when "devuan"
+  describe service(service_rq) do
+    it { should be_running.under("supervisor") }
+  end
 
-describe service(service) do
-  it { should be_running }
-  it { should be_enabled }
+  describe service(service) do
+    it { should be_running.under("supervisor") }
+  end
+else
+  describe service(service_rq) do
+    it { should be_running }
+    it { should be_enabled }
+  end
+
+  describe service(service) do
+    it { should be_running }
+    it { should be_enabled }
+  end
 end
 
 ports.each do |p|
