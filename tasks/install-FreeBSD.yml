@@ -16,7 +16,7 @@
     dest: /usr/local/etc/rc.d/netbox_rq
     mode: '0755'
   notify:
-    - Restart netbox_rq
+    - "{{ __fact_netbox_handler_for_netbox_rq }}"
 
 - name: Create netbox rc script
   template:
@@ -24,7 +24,7 @@
     dest: /usr/local/etc/rc.d/netbox
     mode: '0755'
   notify:
-    - Restart netbox
+    - "{{ __fact_netbox_handler_for_netbox }}"
 
 - name: Enable netbox_service
   ansible.builtin.service:
@@ -43,7 +43,7 @@
     mode: "0644"
     validate: sh -n %s
   notify:
-    - Restart netbox
+    - "{{ __fact_netbox_handler_for_netbox }}"
 
 - name: Create /etc/rc.conf.d/netbox_rq
   ansible.builtin.template:
@@ -52,4 +52,4 @@
     mode: "0644"
     validate: sh -n %s
   notify:
-    - Restart netbox_rq
+    - "{{ __fact_netbox_handler_for_netbox_rq }}"

@@ -1,0 +1,28 @@
+---
+
+- name: Install supervisor (apt)
+  ansible.builtin.apt:
+    name: supervisor
+    policy_rc_d: 101
+    state: present
+  when:
+    - ansible_distribution == 'Devuan' or ansible_distribution == 'Debian'
+
+- name: Install supervisor (yum)
+  ansible.builtin.yum:
+    name: supervisor
+    state: present
+  when:
+    - ansible_os_family == 'RedHat'
+
+- name: Create supervisord.conf
+  ansible.builtin.template:
+    src: supervisor.netbox.conf.j2
+    dest: "{{ netbox_supervisor_conf_file }}"
+    mode: "0644"
+
+- name: Start supervisor
+  ansible.builtin.service:
+    name: supervisor
+    enabled: yes
+    state: started

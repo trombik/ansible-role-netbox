@@ -2,10 +2,19 @@
 # tasks file for ansible-role-netbox
 
 - name: "Inlcude variables from {{ ansible_os_family }}.yml"
-  include_vars: "{{ ansible_os_family }}.yml"
+  include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+      paths:
+        - 'vars'
 
-- name: "Include install-{{ ansible_os_family }}.yml"
-  include: "install-{{ ansible_os_family }}.yml"
+- name: Set netbox handler names
+  set_fact:
+    __fact_netbox_handler_for_netbox: "{% if netbox_using_supervisor %}Restart netbox via supervisor{% else %}Restart netbox via service{% endif %}"
+    __fact_netbox_handler_for_netbox_rq: "{% if netbox_using_supervisor %}Restart netbox_rq via supervisor{% else %}Restart netbox_rq via service{% endif %}"
 
 - name: Create netbox_group
   ansible.builtin.group:
@@ -18,6 +27,18 @@
     group: "{{ netbox_group }}"
     home: "{{ netbox_home_dir }}"
 
+- name: Create netbox_log_dir
+  ansible.builtin.file:
+    path: "{{ netbox_log_dir }}"
+    owner: "{{ netbox_user }}"
+    group: "{{ netbox_group }}"
+    mode: "0755"
+    state: directory
+  notify: "{{ __fact_netbox_handler_for_netbox }}"
+
+- name: "Include install-{{ ansible_os_family }}.yml"
+  include: "install-{{ ansible_os_family }}.yml"
+
 - name: Install netbox via git
   ansible.builtin.git:
     repo: "{{ netbox_git_repo }}"
@@ -28,8 +49,19 @@
   become: yes
   become_user: "{{ netbox_user }}"
   notify:
-    - Restart netbox
-    - Restart netbox_rq
+    - "{{ __fact_netbox_handler_for_netbox }}"
+    - "{{ __fact_netbox_handler_for_netbox_rq }}"
+
+- name: Install pip and wheel
+  ansible.builtin.pip:
+    name:
+      - pip
+      - wheel
+    extra_args: "--upgrade"
+    virtualenv: "{{ netbox_venv_dir }}"
+    virtualenv_command: "{{ ansible_python['executable'] }} -m venv"
+  become: true
+  become_user: "{{ netbox_user }}"
 
 - name: Install pip packages listed in requirements.txt
   ansible.builtin.pip:
@@ -40,8 +72,8 @@
   become: true
   become_user: "{{ netbox_user }}"
   notify:
-    - Restart netbox
-    - Restart netbox_rq
+    - "{{ __fact_netbox_handler_for_netbox }}"
+    - "{{ __fact_netbox_handler_for_netbox_rq }}"
   # XXX disable HTTP/2. `cargo build` fails when building cryptography on
   # macos GitHub Actions runner. this does not happen on FreeBSD, but on
   # OpenBSD.
@@ -66,8 +98,8 @@
   become: true
   become_user: "{{ netbox_user }}"
   notify:
-    - Restart netbox
-    - Restart netbox_rq
+    - "{{ __fact_netbox_handler_for_netbox }}"
+    - "{{ __fact_netbox_handler_for_netbox_rq }}"
 
 - name: Install pip packages listed in local_requirements.txt
   ansible.builtin.pip:
@@ -79,19 +111,10 @@
   become: true
   become_user: "{{ netbox_user }}"
   notify:
-    - Restart netbox
-    - Restart netbox_rq
+    - "{{ __fact_netbox_handler_for_netbox }}"
+    - "{{ __fact_netbox_handler_for_netbox_rq }}"
   environment:
     CARGO_HTTP_MULTIPLEXING: "false"
-
-- name: Create netbox_log_dir
-  ansible.builtin.file:
-    path: "{{ netbox_log_dir }}"
-    owner: "{{ netbox_user }}"
-    group: "{{ netbox_group }}"
-    mode: "0755"
-    state: directory
-  notify: Restart netbox
 
 - name: Create configuration.py
   ansible.builtin.template:
@@ -102,8 +125,8 @@
     mode: '0640'
     validate: "{{ ansible_python['executable'] }} -m py_compile %s"
   notify:
-    - Restart netbox
-    - Restart netbox_rq
+    - "{{ __fact_netbox_handler_for_netbox }}"
+    - "{{ __fact_netbox_handler_for_netbox_rq }}"
 
 - name: Create gunicorn.py
   ansible.builtin.template:
@@ -114,7 +137,7 @@
     group: "{{ netbox_group }}"
     validate: "{{ ansible_python['executable'] }} -m py_compile %s"
   notify:
-    - Restart netbox
+    - "{{ __fact_netbox_handler_for_netbox }}"
 
 - name: Create netbox_static_dir
   ansible.builtin.file:
@@ -158,7 +181,7 @@
   become: yes
   become_user: "{{ netbox_user }}"
   notify:
-    - Restart netbox
+    - "{{ __fact_netbox_handler_for_netbox }}"
   when:
     - __netbox_register_local_requirements['changed']
 
@@ -170,19 +193,37 @@
   become: yes
   become_user: "{{ netbox_user }}"
   notify:
-    - Restart netbox
+    - "{{ __fact_netbox_handler_for_netbox }}"
   when:
     - __netbox_register_local_requirements['changed']
 
-- name: Start netbox
+- name: Start netbox via service
   ansible.builtin.service:
     name: "{{ netbox_service }}"
     state: started
+  when:
+    - not netbox_using_supervisor
 
-- name: Start netbox_rq
+- name: Start netbox_rq via service
   ansible.builtin.service:
     name: "{{ netbox_service_rq }}"
     state: started
+  when:
+    - not netbox_using_supervisor
+
+- name: Start netbox via supervisor
+  community.general.supervisorctl:
+    name: "{{ netbox_service }}"
+    state: started
+  when:
+    - netbox_using_supervisor
+
+- name: Start netbox_rq via supervisor
+  community.general.supervisorctl:
+    name: netbox_rq
+    state: started
+  when:
+    - netbox_using_supervisor
 
 - name: Wait for netbox
   ansible.builtin.wait_for:

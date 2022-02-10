@@ -10,36 +10,26 @@
     name: "{{ netbox_extra_packages }}"
     state: present
 
-- name: Create netbox-rq systemd unit file
-  ansible.builtin.template:
-    src: systemd.netbox-rq.j2
-    dest: /etc/systemd/system/netbox-rq.service
-    mode: '0644'
-  register: __register_systemd_unit_file_netbox_rq
-  notify:
-    - Restart netbox_rq
-
-- name: Create netbox systemd unit file
-  ansible.builtin.template:
-    src: systemd.netbox.j2
-    dest: /etc/systemd/system/netbox.service
-    mode: '0644'
-  register: __register_systemd_unit_file_netbox
-  notify:
-    - Restart netbox
-
-- name: Reload systemd
-  ansible.builtin.systemd:
-    daemon_reload: yes
+- name: "Include install-supervisor.yml"
+  include_tasks: install-supervisor.yml
   when:
-    - __register_systemd_unit_file_netbox_rq['changed'] or __register_systemd_unit_file_netbox['changed']
+    - netbox_using_supervisor
+
+- name: "Include install-systemd.yml"
+  include_tasks: install-systemd.yml
+  when:
+    - not netbox_using_supervisor
 
 - name: Enable netbox_service
   ansible.builtin.service:
     name: "{{ netbox_service }}"
     enabled: yes
+  when:
+    - not netbox_using_supervisor
 
 - name: Enable netbox_service_rq
   ansible.builtin.service:
     name: "{{ netbox_service_rq }}"
     enabled: yes
+  when:
+    - not netbox_using_supervisor

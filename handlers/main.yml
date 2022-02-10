@@ -1,11 +1,21 @@
 ---
 
-- name: Restart netbox
+- name: Restart netbox via service
   service:
     name: "{{ netbox_service }}"
     state: restarted
 
-- name: Restart netbox_rq
+- name: Restart netbox_rq via service
   service:
     name: "{{ netbox_service_rq }}"
+    state: restarted
+
+- name: Restart netbox via supervisor
+  community.general.supervisorctl:
+    name: "{{ netbox_service }}"
+    state: restarted
+
+- name: Restart netbox_rq via supervisor
+  community.general.supervisorctl:
+    name: netbox_rq
     state: restarted
