@@ -87,6 +87,17 @@ platforms:
       extra_vars:
         ansible_python_interpreter: '/usr/bin/python3'
 
+  - name: fedora-35-amd64
+    driver:
+      box: trombik/ansible-fedora-35-amd64
+      box_check_update: false
+    driver_config:
+      network:
+        - ["forwarded_port", {guest: 80, host: 8005}]
+    provisioner:
+      extra_vars:
+        ansible_python_interpreter: '/usr/bin/python3'
+
 suites:
   - name: default
     provisioner:

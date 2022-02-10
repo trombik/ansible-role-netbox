@@ -4,13 +4,13 @@ require "serverspec"
 extra_packages = []
 service = "netbox"
 service_rq = case os[:family]
-             when "ubuntu"
+             when "ubuntu", "fedora"
                "netbox-rq"
              else
                "netbox_rq"
              end
 root_dir = case os[:family]
-           when "ubuntu", "devuan"
+           when "ubuntu", "devuan", "fedora"
              "/opt/netbox"
            when "openbsd"
              "/var/www/htdocs/netbox"
@@ -23,7 +23,7 @@ config_dir = "#{root_dir}/netbox/netbox/netbox"
 config = "#{config_dir}/configuration.py"
 gunicorn_config = "#{config_dir}/gunicorn.py"
 local_requirements_txt = case os[:family]
-                         when "ubuntu", "devuan"
+                         when "ubuntu", "devuan", "fedora"
                            "/opt/netbox/netbox/local_requirements.txt"
                          when "openbsd"
                            "/var/www/htdocs/netbox/netbox/local_requirements.txt"
