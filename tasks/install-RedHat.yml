@@ -1,0 +1,35 @@
+---
+
+- name: Install netbox_required_packages
+  ansible.builtin.yum:
+    name: "{{ netbox_required_packages }}"
+    state: present
+
+- name: Install netbox_extra_packages
+  ansible.builtin.yum:
+    name: "{{ netbox_extra_packages }}"
+    state: present
+
+- name: "Include install-supervisor.yml"
+  include_tasks: install-supervisor.yml
+  when:
+    - netbox_using_supervisor
+
+- name: "Include install-systemd.yml"
+  include_tasks: install-systemd.yml
+  when:
+    - not netbox_using_supervisor
+
+- name: Enable netbox_service
+  ansible.builtin.service:
+    name: "{{ netbox_service }}"
+    enabled: yes
+  when:
+    - not netbox_using_supervisor
+
+- name: Enable netbox_service_rq
+  ansible.builtin.service:
+    name: "{{ netbox_service_rq }}"
+    enabled: yes
+  when:
+    - not netbox_using_supervisor

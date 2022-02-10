@@ -1,0 +1,17 @@
+---
+__netbox_user: netbox
+__netbox_group: netbox
+__netbox_service: netbox
+__netbox_service_rq: netbox-rq
+__netbox_home_dir: /opt/netbox
+__netbox_log_dir: /var/log/netbox
+__netbox_required_packages:
+  - git
+  - python3-pip
+  - python3-devel
+  - libxml2-devel
+  - libxslt-devel
+  - libffi-devel
+  - libpq-devel
+  - openssl-devel
+__netbox_supervisor_conf_dir: /etc/supervisor

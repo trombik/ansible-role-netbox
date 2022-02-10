@@ -20,6 +20,7 @@
       OpenBSD: no
       RedHat: no
       Devuan: yes
+      Fedora: no
     netbox_using_supervisor: "{{ dist_netbox_using_supervisor[ansible_distribution] }}"
 
     # see available versions at:
