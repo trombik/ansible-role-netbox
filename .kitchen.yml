@@ -29,7 +29,7 @@ platforms:
   - name: freebsd-13.0-amd64
     driver:
       box: trombik/ansible-freebsd-13.0-amd64
-      box_check_update: false
+      box_version: 20220128
     driver_config:
       ssh:
         shell: '/bin/sh'
@@ -42,7 +42,7 @@ platforms:
   - name: openbsd-6.9-amd64
     driver:
       box: trombik/ansible-openbsd-6.9-amd64
-      box_check_update: false
+      box_version: 20210519
     driver_config:
       ssh:
         shell: '/bin/sh'
@@ -55,7 +55,7 @@ platforms:
   - name: openbsd-7.0-amd64
     driver:
       box: trombik/ansible-openbsd-7.0-amd64
-      box_check_update: false
+      box_version: 20220129
     driver_config:
       ssh:
         shell: '/bin/sh'
@@ -68,7 +68,7 @@ platforms:
   - name: ubuntu-20.04-amd64
     driver:
       box: trombik/ansible-ubuntu-20.04-amd64
-      box_check_update: false
+      box_version: 20220209.0232
     driver_config:
       network:
         - ["forwarded_port", {guest: 80, host: 8003}]
@@ -79,7 +79,7 @@ platforms:
   - name: devuan-3-amd64
     driver:
       box: trombik/ansible-devuan-3-amd64
-      box_check_update: false
+      box_version: 20211005
     driver_config:
       network:
         - ["forwarded_port", {guest: 80, host: 8004}]
@@ -91,6 +91,7 @@ platforms:
     driver:
       box: trombik/ansible-fedora-35-amd64
       box_check_update: false
+      box_version: 20200209.1639
     driver_config:
       network:
         - ["forwarded_port", {guest: 80, host: 8005}]
