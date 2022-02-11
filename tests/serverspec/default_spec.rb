@@ -100,6 +100,14 @@ describe file log_file do
   it { should be_grouped_into group }
 end
 
+describe file root_dir do
+  it { should exist }
+  it { should be_mode 755 }
+  it { should be_directory }
+  it { should be_owned_by user }
+  it { should be_grouped_into group }
+end
+
 case os[:family]
 when "freebsd"
   describe file("/etc/rc.conf.d/netbox") do
