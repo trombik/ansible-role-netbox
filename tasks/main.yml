@@ -27,6 +27,11 @@
     group: "{{ netbox_group }}"
     home: "{{ netbox_home_dir }}"
 
+- name: Ensure netbox_home_dir is readable by others
+  ansible.builtin.file:
+    path: "{{ netbox_home_dir }}"
+    mode: "0755"
+
 - name: Create netbox_log_dir
   ansible.builtin.file:
     path: "{{ netbox_log_dir }}"
