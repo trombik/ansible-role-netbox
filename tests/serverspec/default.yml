@@ -4,6 +4,7 @@
     - role: trombik.sysctl
     - role: trombik.postgresql
     - role: trombik.redis
+    - role: trombik.supervisor
     - role: ansible-role-netbox
     - role: trombik.nginx
   vars:
@@ -22,6 +23,43 @@
       Devuan: yes
       Fedora: no
     netbox_using_supervisor: "{{ dist_netbox_using_supervisor[ansible_distribution] }}"
+
+    netbox_supervisor_config: |
+      [program:netbox]
+      command={{ netbox_venv_dir }}/bin/gunicorn --pid /var/tmp/netbox.pid --pythonpath {{ netbox_app_dir }} --config {{ netbox_gunicorn_conf_file }} netbox.wsgi
+      numprocs=1
+      directory={{ netbox_root_dir }}
+      user={{ netbox_user }}
+
+      stdout_logfile={{ netbox_log_dir }}/general.log
+      stdout_logfile_maxbytes=10MB
+      stdout_logfile_backups=30
+      stdout_capture_maxbytes=1MB
+
+      stderr_logfile={{ netbox_log_dir }}/error.log
+
+      stderr_logfile_maxbytes=10MB
+      stderr_logfile_backups=10
+      stderr_capture_maxbytes=1MB
+
+      [program:netbox_rq]
+      command={{ netbox_venv_dir }}/bin/python3 {{ netbox_app_dir }}/manage.py rqworker high default low
+      numprocs=1
+      directory={{ netbox_root_dir }}
+      startsecs=10                  ; number of secs prog must stay running (def. 1)
+      startretries=3                ; max # of serial start failures (default 3)
+
+      user={{ netbox_user }}
+
+      stdout_logfile={{ netbox_log_dir }}/general-rq.log
+      stdout_logfile_maxbytes=10MB
+      stdout_logfile_backups=30
+      stdout_capture_maxbytes=1MB
+
+      stderr_logfile={{ netbox_log_dir }}/error-rq.log
+      stderr_logfile_maxbytes=10MB
+      stderr_logfile_backups=10
+      stderr_capture_maxbytes=1MB
 
     # see available versions at:
     # https://github.com/netbox-community/netbox/releases
@@ -322,7 +360,38 @@
         enabled: yes
     # _________________________________________redis
     redis_password: password
-    redis_config:
-      databases: 17
-      save 900: 1
-      requirepass: "{{ redis_password }}"
+    redis_config: |
+      databases 17
+      save 900 1
+      requirepass "{{ redis_password }}"
+    # _________________________________________supervisor
+
+    os_supervisor_flags:
+      OpenBSD: "-c {{ supervisor_conf_file }}"
+      FreeBSD: |
+        supervisord_config="{{ supervisor_conf_file }}"
+        supervisord_user="{{ supervisor_user }}"
+    # "
+    supervisor_flags: "{{ os_supervisor_flags[ansible_os_family] | default('') }}"
+    supervisor_config: |
+      [unix_http_server]
+      file={{ supervisor_unix_socket_file }}
+
+      [supervisord]
+      logfile={{ supervisor_log_file }}
+      logfile_maxbytes=50MB
+      logfile_backups=10
+      loglevel=info
+      pidfile={{ supervisor_pid_file }}
+      nodaemon=false
+      minfds=1024
+      minprocs=200
+
+      [rpcinterface:supervisor]
+      supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+      [supervisorctl]
+      serverurl=unix://{{ supervisor_unix_socket_file }}
+
+      [include]
+      files = {{ supervisor_conf_d_dir }}/*.conf

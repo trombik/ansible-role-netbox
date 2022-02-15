@@ -54,3 +54,4 @@ netbox_rq_flags: ""
 netbox_using_supervisor: no
 netbox_supervisor_conf_dir: "{{ __netbox_supervisor_conf_dir }}"
 netbox_supervisor_conf_file: "{{ netbox_supervisor_conf_dir }}/conf.d/netbox.conf"
+netbox_supervisor_config: ""
