@@ -1,7 +1,7 @@
 ---
 # tasks file for ansible-role-netbox
 
-- name: "Inlcude variables from {{ ansible_os_family }}.yml"
+- name: "Include variables from {{ ansible_os_family }}.yml"
   include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
