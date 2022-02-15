@@ -5,6 +5,7 @@ roles:
   - name: trombik.redis
   - name: trombik.sysctl
   - name: trombik.x509_certificate
+  - name: trombik.supervisor
 collections:
   - name: community.general
   - name: community.postgresql
