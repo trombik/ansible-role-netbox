@@ -378,6 +378,7 @@
       file={{ supervisor_unix_socket_file }}
 
       [supervisord]
+      user=root
       logfile={{ supervisor_log_file }}
       logfile_maxbytes=50MB
       logfile_backups=10
