@@ -17,5 +17,5 @@
 
 - name: Restart netbox_rq via supervisor
   community.general.supervisorctl:
-    name: netbox_rq
+    name: "{{ netbox_service_rq }}"
     state: restarted
