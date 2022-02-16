@@ -26,24 +26,24 @@
     netbox_supervisor_conf_file: "{{ supervisor_conf_d_dir }}/netbox.conf"
 
     netbox_supervisor_config: |
-      [program:netbox]
+      [program:{{ netbox_service }}]
       command={{ netbox_venv_dir }}/bin/gunicorn --pid /var/tmp/netbox.pid --pythonpath {{ netbox_app_dir }} --config {{ netbox_gunicorn_conf_file }} netbox.wsgi
       numprocs=1
       directory={{ netbox_root_dir }}
       user={{ netbox_user }}
 
-      stdout_logfile={{ netbox_log_dir }}/general.log
+      stdout_logfile={{ netbox_log_dir }}/{{ netbox_service }}.log
       stdout_logfile_maxbytes=10MB
       stdout_logfile_backups=30
       stdout_capture_maxbytes=1MB
 
-      stderr_logfile={{ netbox_log_dir }}/error.log
+      stderr_logfile={{ netbox_log_dir }}/{{ netbox_service }}-error.log
 
       stderr_logfile_maxbytes=10MB
       stderr_logfile_backups=10
       stderr_capture_maxbytes=1MB
 
-      [program:netbox_rq]
+      [program:{{ netbox_service_rq }}]
       command={{ netbox_venv_dir }}/bin/python3 {{ netbox_app_dir }}/manage.py rqworker high default low
       numprocs=1
       directory={{ netbox_root_dir }}
@@ -52,12 +52,12 @@
 
       user={{ netbox_user }}
 
-      stdout_logfile={{ netbox_log_dir }}/general-rq.log
+      stdout_logfile={{ netbox_log_dir }}/{{ netbox_service_rq }}.log
       stdout_logfile_maxbytes=10MB
       stdout_logfile_backups=30
       stdout_capture_maxbytes=1MB
 
-      stderr_logfile={{ netbox_log_dir }}/error-rq.log
+      stderr_logfile={{ netbox_log_dir }}/{{ netbox_service_rq }}-error.log
       stderr_logfile_maxbytes=10MB
       stderr_logfile_backups=10
       stderr_capture_maxbytes=1MB

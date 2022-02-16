@@ -225,7 +225,7 @@
 
 - name: Start netbox_rq via supervisor
   community.general.supervisorctl:
-    name: netbox_rq
+    name: "{{ netbox_service_rq }}"
     state: started
   when:
     - netbox_using_supervisor

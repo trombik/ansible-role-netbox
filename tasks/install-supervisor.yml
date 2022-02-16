@@ -13,5 +13,5 @@
 
 - name: Add netbox_rq to supervisor
   community.general.supervisorctl:
-    name: netbox_rq
+    name: "{{ netbox_service_rq }}"
     state: present
