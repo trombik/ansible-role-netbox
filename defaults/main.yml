@@ -24,7 +24,6 @@ netbox_log_file: "{{ netbox_log_dir }}/netbox.log"
 netbox_bind_scheme: http
 netbox_bind_address: 127.0.0.1
 netbox_bind_port: 8001
-netbox_secret_key: ""
 netbox_redis_tasks_host: 127.0.0.1
 netbox_redis_tasks_port: 6379
 netbox_redis_tasks_password: ""
