@@ -14,4 +14,3 @@ __netbox_required_packages:
   - libffi-devel
   - libpq-devel
   - openssl-devel
-__netbox_supervisor_conf_dir: /etc/supervisor

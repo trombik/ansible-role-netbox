@@ -14,4 +14,3 @@ __netbox_required_packages:
   - lang/rust
   - textproc/libxml2
   - textproc/libxslt
-__netbox_supervisor_conf_dir: /usr/local/etc/supervisor
