@@ -364,6 +364,18 @@
       databases 17
       save 900 1
       requirepass "{{ redis_password }}"
+      bind 127.0.0.1
+      protected-mode yes
+      port {{ redis_port }}
+      timeout 0
+      tcp-keepalive 300
+      daemonize yes
+      pidfile /var/run/redis/{{ redis_service }}.pid
+      loglevel notice
+      logfile {{ redis_log_file }}
+      always-show-logo no
+      dbfilename dump.rdb
+      dir {{ redis_db_dir }}/
     # _________________________________________supervisor
 
     os_supervisor_flags:
