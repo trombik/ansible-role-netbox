@@ -21,7 +21,7 @@ jobs:
 
   lint:
     needs: pre_build
-    if: ${{ needs.pre_build.outputs.should_skip != 'true' }}
+    if: ${{ needs.pre_build.outputs.should_skip != 'true' || github.ref_name == 'main' || github.ref_name == 'master' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
