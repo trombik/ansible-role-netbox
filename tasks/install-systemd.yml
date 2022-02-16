@@ -22,4 +22,4 @@
   ansible.builtin.systemd:
     daemon_reload: yes
   when:
-    - __register_systemd_unit_file_netbox_rq['changed'] or __register_systemd_unit_file_netbox['changed']
+    - __register_systemd_unit_file_netbox_rq['changed'] or __register_systemd_unit_file_netbox['changed'] # noqa no-handler
