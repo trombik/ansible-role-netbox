@@ -107,3 +107,14 @@ suites:
     verifier:
       name: shell
       command: rspec -c -f d -I tests/serverspec tests/serverspec/default_spec.rb
+    excludes:
+      - devuan-3-amd64
+  - name: supervisor
+    provisioner:
+      name: ansible_playbook
+      playbook: tests/serverspec/supervisor.yml
+    verifier:
+      name: shell
+      command: rspec -c -f d -I tests/serverspec tests/serverspec/supervisor_spec.rb
+    includes:
+      - devuan-3-amd64
