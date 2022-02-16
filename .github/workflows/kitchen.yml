@@ -112,3 +112,20 @@ jobs:
       - name: Run test-kitchen
         run: |
           bundle exec kitchen test ${{ matrix.instance }}
+  all_build:
+    # a meta job that requires all of the above so that repository
+    # admin can choose a single test name in "Require status checks to pass
+    # before merging". A trick obtained from:
+    #
+    # https://github.com/jazzband/pip-tools/issues/1085#issuecomment-619172509
+    name: All build
+    runs-on: ubuntu-latest
+    needs:
+      - pre_build
+      - lint
+      - list
+      - kitchen
+    steps:
+      - name:
+        run: |
+          echo "All builds finished"
