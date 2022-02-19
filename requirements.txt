@@ -1,0 +1,6 @@
+# pin molecule.  see:
+# https://github.com/ansible-community/molecule/issues/3435
+molecule==3.5.2
+ansible==5.3.0
+ansible-core==2.12.2
+molecule-vagrant
