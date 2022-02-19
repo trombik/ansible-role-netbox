@@ -10,3 +10,4 @@ ignore: |
   .kitchen.local.yml
   .kitchen.yml
   collections
+  .tox

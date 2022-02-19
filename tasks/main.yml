@@ -190,7 +190,7 @@
   when:
     # XXX this needs to be called before the end of role play. when a hanlder
     # is used, it would be at the end of the entire play, and too late.
-    - __netbox_register_local_requirements['changed'] # noqa no-handler
+    - __netbox_register_local_requirements['changed']  # noqa no-handler
 
 - name: Do collectstatic when local_requirements changed
   community.general.django_manage:
@@ -202,7 +202,7 @@
   notify:
     - "{{ __fact_netbox_handler_for_netbox }}"
   when:
-    - __netbox_register_local_requirements['changed'] # noqa no-handler
+    - __netbox_register_local_requirements['changed']  # noqa no-handler
 
 - name: Start netbox via service
   ansible.builtin.service:
