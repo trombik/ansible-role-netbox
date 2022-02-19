@@ -1,0 +1,24 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+platforms:
+  - name: buildbot
+    box: trombik/ansible-freebsd-13.0-amd64
+  - name: worker1
+    box: trombik/ansible-freebsd-13.0-amd64
+  - name: worker2
+    box: trombik/ansible-freebsd-13.0-amd64
+provisioner:
+  name: ansible
+  options:
+    vv: True
+  config_options:
+    defaults:
+      verbosity: 2
+      stdout_callback: yaml
+      force_color: yes
+
+verifier:
+  name: ansible
